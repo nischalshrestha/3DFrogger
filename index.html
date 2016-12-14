@@ -464,7 +464,7 @@
 			var justFinished = false;
 			var placeHolders = [];
 
-			var INCREMENT_SPEED = 0.012;
+			var INCREMENT_SPEED = 0.015;
 			//Score related stuff
 			var TOTAL_LEVELS = 5;
 			var TOTAL_SPOTS = 5;
@@ -1221,7 +1221,7 @@
 				//green cars
 				for(var gf = 0; gf < greenFastCars.length; gf++)
 				{
-					greenFastCars[gf].position.x += 0.05 + INCREMENT_SPEED*levelsCompleted;
+					greenFastCars[gf].position.x += 0.05 + INCREMENT_SPEED*levelsCompleted*5;
 					if(greenFastCars[gf].position.x > border + normalCarLength){
 						greenFastCars[gf].position.x = -(border + normalCarLength);
 					}
