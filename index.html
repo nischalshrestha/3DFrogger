@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset=utf-8>
+		<title>3D Frogger</title>
+		<style>
+			body { margin: 0; }
+			canvas { width: 80%; height: 80% }
+			#lives {
+				position: absolute;
+				z-index: 1;
+				left: 50px;
+				top: 20px;
+				width:100px;
+				height:20px;
+				color: white;
+				visibility: hidden;
+			}
+
+			#score {
+				position: absolute;
+				z-index: 1;
+				left: 50px;
+				top: 80px;
+				width:100px;
+				height:20px;
+				color: white;
+				visibility: hidden;
+			}
+
+			#controls {
+				position: absolute;
+				z-index: 1;
+				left: 1000px;
+				top: 10px;
+				width:300px;
+				height: 10px;
+				color: white;
+				/*visibility: hidden;*/
+			}
+
+			#start {
+				position: absolute;
+				z-index: 1;
+				left: 50px;
+				top: 550px;
+				width:300px;
+				height:100px;
+				width: 90%;
+    		margin: 0 auto;
+			}
+
+			#level {
+				position: absolute;
+				z-index: 1;
+				left: 50px;
+				top: 560px;
+				width:300px;
+				height:100px;
+				width: 90%;
+    		margin: 0 auto;
+				visibility: hidden;
+			}
+
+			#levelComplete {
+				position: absolute;
+				z-index: 2;
+				left: 50px;
+				top: 200px;
+				width: 300px;
+				height: 200px;
+				width: 90%;
+				margin: 0 auto;
+				visibility: hidden;;
+			}
+
+			#gameOver {
+				position: absolute;
+				z-index: 1;
+				left: 50px;
+				top: 200px;
+				width:300px;
+				height:200px;
+				width: 90%;
+				margin: 0 auto;
+				visibility: hidden;
+			}
+
+			p {
+				color: green;
+				font:normal 20pt Arial;
+				text-shadow: 0 1px 0 #ccc,
+               0 2px 0 #c9c9c9,
+               0 3px 0 #bbb,
+               0 4px 0 #b9b9b9,
+               0 5px 0 #aaa,
+               0 6px 1px rgba(0,0,0,.1),
+               0 0 5px rgba(0,0,0,.1),
+               0 1px 3px rgba(0,0,0,.3),
+               0 3px 5px rgba(0,0,0,.2),
+               0 5px 10px rgba(0,0,0,.25),
+               0 10px 10px rgba(0,0,0,.2),
+               0 20px 20px rgba(0,0,0,.15);
+			}
+
+			#controlsText{
+				color: #d09965;
+				font:normal 12pt Arial;
+				text-shadow: 0 1px 0 #ccc,
+							 0 1px 0 #c9c9c9,
+							 0 1px 0 #bbb,
+							 0 1px 0 #b9b9b9,
+							 0 1px 0 #aaa,
+							 0 1px 1px rgba(0,0,0,.1),
+							 0 0 5px rgba(0,0,0,.1),
+							 0 1px 3px rgba(0,0,0,.3),
+							 0 3px 5px rgba(0,0,0,.2),
+							 0 5px 10px rgba(0,0,0,.25),
+							 0 10px 10px rgba(0,0,0,.2),
+							 0 20px 20px rgba(0,0,0,.15);
+			}
+
+			#levelNum {
+				color: purple;
+				font:normal 50pt Arial;
+				text-shadow: 0 1px 0 #ccc,
+							 0 2px 0 #c9c9c9,
+							 0 3px 0 #bbb,
+							 0 4px 0 #b9b9b9,
+							 0 5px 0 #aaa,
+							 0 6px 1px rgba(0,0,0,.1),
+							 0 0 5px rgba(0,0,0,.1),
+							 0 1px 3px rgba(0,0,0,.3),
+							 0 3px 5px rgba(0,0,0,.2),
+							 0 5px 10px rgba(0,0,0,.25),
+							 0 10px 10px rgba(0,0,0,.2),
+							 0 20px 20px rgba(0,0,0,.15);
+			}
+
+			#levelCompleteText {
+				color: green;
+				font:normal 50pt Arial;
+				text-shadow: 0 1px 0 #ccc,
+							 0 2px 0 #c9c9c9,
+							 0 3px 0 #bbb,
+							 0 4px 0 #b9b9b9,
+							 0 5px 0 #aaa,
+							 0 6px 1px rgba(0,0,0,.1),
+							 0 0 5px rgba(0,0,0,.1),
+							 0 1px 3px rgba(0,0,0,.3),
+							 0 3px 5px rgba(0,0,0,.2),
+							 0 5px 10px rgba(0,0,0,.25),
+							 0 10px 10px rgba(0,0,0,.2),
+							 0 20px 20px rgba(0,0,0,.15);
+			}
+
+			#gameOverText {
+				color: red;
+				font:normal 50pt Arial;
+				text-shadow: 0 1px 0 #ccc,
+							 0 2px 0 #c9c9c9,
+							 0 3px 0 #bbb,
+							 0 4px 0 #b9b9b9,
+							 0 5px 0 #aaa,
+							 0 6px 1px rgba(0,0,0,.1),
+							 0 0 5px rgba(0,0,0,.1),
+							 0 1px 3px rgba(0,0,0,.3),
+							 0 3px 5px rgba(0,0,0,.2),
+							 0 5px 10px rgba(0,0,0,.25),
+							 0 10px 10px rgba(0,0,0,.2),
+							 0 20px 20px rgba(0,0,0,.15);
+			}
+
+		</style>
+	</head>
+	<body>
+		<canvas id="mywebgl"></canvas>
+		<div id="lives">
+        LIVES: <span id="life"></span>
+    </div>
+		<div id="score">
+        SCORE: <span id="score"></span>
+    </div>
+		<div id="gameOver">
+			<center><p id="gameOverText">GAME OVER!</p></center>
+		</div>
+		<div id="start">
+				<center><p>PRESS SPACE TO START</p></center>
+		</div>
+		<div id="level">
+				<center><span id="levelNum"></span></center>
+		</div>
+		<div id="levelComplete">
+				<center><span id="levelCompleteText"></span></center>
+		</div>
+		<div id="controls">
+			<center>
+				<h5 id="controlsText">GUIDE:</h4>
+				<p id="controlsText">Arrow Keys for movement</p>
+				<p id="controlsText">Be quick and score big points!</p>
+				</center>
+		</div>
+		<audio id="startAudio" src="audio/sound-frogger-coin-in.wav"></audio>
+		<audio id="movementAudio" src="audio/sound-frogger-hop.wav"></audio>
+		<audio id="squashAudio" src="audio/sound-frogger-squash.wav"></audio>
+		<audio id="plunkAudio" src="audio/sound-frogger-plunk.wav"></audio>
+		<audio id="extraLifeAudio" src="audio/sound-frogger-extra.wav"></audio>
+		<audio id="startMusic" src="audio/startMusic.mp3"></audio>
+		<audio id="gameOverAudio" src="audio/gameOver.mp3"></audio>
+		<audio id="finishSpotAudio" src="audio/finishPoint.mp3"></audio>
+		<script src="js/three.js"></script>
+		<script src="js/OBJLoader.js"></script>
+		<script>
+			// Our Javascript will go here.
+			var canvas = document.getElementById("mywebgl");
+      var renderer = new THREE.WebGLRenderer({canvas: canvas});
+      renderer.setSize(window.innerWidth, window.innerHeight);
+			renderer.setClearColor(0x000000);
+	    renderer.setPixelRatio(window.devicePixelRatio);
+			renderer.shadowMap.enabled = true;
+			renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+			var startAudio = document.getElementById("startAudio");
+			var movementAudio = document.getElementById("movementAudio");
+			var squashAudio = document.getElementById("squashAudio");
+			var plunkAudio = document.getElementById("plunkAudio");
+			var extraLifeAudio = document.getElementById("extraLifeAudio");
+			var startMusic = document.getElementById("startMusic");
+			var gameOverAudio = document.getElementById("gameOverAudio");
+			var finishSpotAudio = document.getElementById("finishSpotAudio");
+
+			var scene = new THREE.Scene();
+			var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 3000);
+			camera.position.set(0, -15, 20);
+			camera.up = new THREE.Vector3(0, 0, 1);
+			camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+			//LIGHTS
+			var light = new THREE.AmbientLight(0xffffff, 0.5);
+			scene.add(light);
+
+			var light2 = new THREE.PointLight(0xffffff, 0.8);
+			light2.position.set(0, 20, 10);
+			light2.castShadow = true;
+			light2.shadow.camera.near = 0.1;
+			light2.shadow.camera.far = 25;
+			scene.add(light2);
+
+			// instantiate a loader
+			var loader = new THREE.TextureLoader();
+
+			var baseTexture = new THREE.TextureLoader().load( "images/purple-texture.jpg" );
+			//add Base ground (where the froggy starts)
+			var groundBasePlane = new THREE.PlaneBufferGeometry(40, 2);
+			var groundBaseMat = new THREE.MeshPhongMaterial({ color: 0x8500d9, specular: 0x050505, map: baseTexture});
+			var groundBase = new THREE.Mesh(groundBasePlane, groundBaseMat);
+			// groundBase.rotation.x = Math.PI/8;
+			groundBase.position.x = 0;
+			groundBase.position.y = 0;
+			groundBase.position.z = -10;
+			// //IMPORTANT, draw on both sides
+			groundBase.doubleSided = true;
+			groundBase.receiveShadow = true;
+			scene.add(groundBase);
+
+			//add Road ground
+			var roadTexture = new THREE.TextureLoader().load( "images/road.png" );
+			roadTexture.wrapS = THREE.RepeatWrapping;
+			roadTexture.wrapT = THREE.RepeatWrapping;
+			roadTexture.repeat.set(1,1);
+
+			var groundRoadPlane = new THREE.PlaneBufferGeometry(40, 10);
+			var groundRoadMat = new THREE.MeshPhongMaterial({ color: 0x404040, specular: 0x050505, map: roadTexture, side: THREE.DoubleSide});
+      var groundRoad = new THREE.Mesh(groundRoadPlane, groundRoadMat);
+			groundRoad.position.x = 0;
+			groundRoad.position.y = 6;
+			groundRoad.position.z = -10;
+      // //IMPORTANT, draw on both sides
+      groundRoad.doubleSided = true;
+      groundRoad.receiveShadow = true;
+      scene.add(groundRoad);
+			var border = groundRoadPlane.parameters.width/2;
+
+			//add 2nd Base ground which is the middle
+			var groundMidBasePlane = new THREE.PlaneBufferGeometry(40, 2);
+			var groundMidBaseMat = new THREE.MeshPhongMaterial({ color: 0x8500d9, specular: 0x050505, map: baseTexture});
+			var groundMidBase = new THREE.Mesh(groundMidBasePlane, groundMidBaseMat);
+			// groundBase.rotation.x = Math.PI/8;
+			groundMidBase.position.x = 0;
+			groundMidBase.position.y = 12;
+			groundMidBase.position.z = -10;
+			// //IMPORTANT, draw on both sides
+			groundMidBase.doubleSided = true;
+			groundMidBase.receiveShadow = true;
+			scene.add(groundMidBase);
+
+			//add water
+			var groundWaterPlane = new THREE.PlaneBufferGeometry(40, 10);
+			var groundWaterTexture = new THREE.TextureLoader().load("images/water.jpg");
+			var groundWaterMat = new THREE.MeshPhongMaterial({ color: 0x00004a, specular: 0x050505, map: groundWaterTexture});
+      var groundWater = new THREE.Mesh(groundWaterPlane, groundWaterMat);
+			groundWater.position.x = 0;
+			groundWater.position.y = 18;
+			groundWater.position.z = -10;
+      // //IMPORTANT, draw on both sides
+      groundWater.doubleSided = true;
+      groundWater.receiveShadow = true;
+      scene.add(groundWater);
+
+			// planes for turtles
+			var turtleWaterPlane = new THREE.PlaneBufferGeometry(2, 2);
+			var turtleWaterMat = new THREE.MeshPhongMaterial({ color: 0xffffff, specular: 0x050505, map: groundWaterTexture});
+
+			var grassTexture = new THREE.TextureLoader().load("images/grass.png");
+
+			// add grass at end
+			var groundGrassPlane = new THREE.PlaneBufferGeometry(40, 6);
+			var groundGrassMat = new THREE.MeshPhongMaterial({ color: 0x21de00, specular: 0x050505,  map: grassTexture });
+      var groundGrass = new THREE.Mesh(groundGrassPlane, groundGrassMat);
+			groundGrass.position.x = 0;
+			groundGrass.position.y = 26;
+			groundGrass.position.z = -10;
+      // //IMPORTANT, draw on both sides
+      groundGrass.doubleSided = true;
+      groundGrass.receiveShadow = true;
+      scene.add(groundGrass);
+
+			// Finish Planes
+			var finishSpots = [];
+			var finishPlane = new THREE.PlaneBufferGeometry(4, 5);
+			var swampTexture = new THREE.TextureLoader().load("images/swamp.jpg");
+			var finishPlaneMat = new THREE.MeshPhongMaterial({specular: 0x050505, map: swampTexture});
+			for(var f = 0; f < 5; f++)
+			{
+				var finish = new THREE.Mesh(finishPlane, finishPlaneMat);
+				finish.position.x = -16 + 8*f;
+				finish.position.y = 25.5;
+				finish.position.z = -9.9;
+				// //IMPORTANT, draw on both sides
+				finish.doubleSided = true;
+				finish.receiveShadow = true;
+				finishSpots.push(finish);
+				scene.add(finish);
+			}
+
+			var topBorder = finish.position.y + finishPlane.parameters.height;
+			console.log("top border "+topBorder);
+
+			//add right wall
+			var rightWallPlane = new THREE.BoxGeometry(20, 22, 20);
+			var rightMat = new THREE.MeshPhongMaterial({ color: 0x000000, specular: 0x050505});
+      var rightWall = new THREE.Mesh(rightWallPlane, rightMat);
+			rightWall.rotation.y = -Math.PI/2;
+			rightWall.position.x = 30;
+			rightWall.position.y = 11;
+			rightWall.position.z = 0;
+      // //IMPORTANT, draw on both sides
+      rightWall.doubleSided = true;
+      scene.add(rightWall);
+
+			//add left wall
+			var leftWallPane = new THREE.BoxGeometry(20, 22, 20);
+			var leftWallMat = new THREE.MeshPhongMaterial( { color: 0x000000, specular: 0x050505} );
+      var leftWall = new THREE.Mesh(leftWallPane, leftWallMat);
+			leftWall.rotation.y = Math.PI/2;
+			leftWall.position.x = -30;
+			leftWall.position.y = 11;
+			leftWall.position.z = 0;
+      // //IMPORTANT, draw on both sides
+      leftWall.doubleSided = true;
+      scene.add(leftWall);
+
+			// CARS
+			// car geometry
+			var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+			// normal cars
+			var yellowCars = [];
+			var yellowCarTexture =  new THREE.TextureLoader().load("images/yellow.jpg");
+			var greenSlowCars = [];
+			var greenSlowCarTexture = new THREE.TextureLoader().load("images/greenSlow.jpg");
+			var pinkCars = [];
+			var pinkCarTexture =  new THREE.TextureLoader().load("images/pink.jpg");
+			var greenFastCars = [];
+			var greenFastCarTexture =  new THREE.TextureLoader().load("images/greenFast.jpg");
+			greenFastCarTexture.wrapS = THREE.RepeatWrapping;
+			greenFastCarTexture.wrapT = THREE.RepeatWrapping;
+			greenFastCarTexture.repeat.set(4,2);
+			var normalCarLength = 1;
+			// grey truck
+			var greyCars = [];
+			var greyCarLength = 3;
+			var greyCarTexture = new THREE.TextureLoader().load("images/truck.jpg");
+
+			var shortLogs = [];
+			var shortLogLength = 4;
+			var longLogs = [];
+			var longLogLength = 10;
+			var mediumLogs = [];
+			var mediumLogLength = 6;
+			var logWidth = 1;
+			var logTexture = new THREE.TextureLoader().load("images/wood.jpg");
+
+			// TURTLES
+			var turtleGeo = new THREE.SphereGeometry( 1, 32, 32 );
+			var shellTexture = new THREE.TextureLoader().load("images/shell.jpg");
+			shellTexture.wrapS = THREE.RepeatWrapping;
+			shellTexture.wrapT = THREE.RepeatWrapping;
+			shellTexture.repeat.set(6,6);
+			var turtleMat = new THREE.MeshPhongMaterial({ specular: 0x050505, map: shellTexture});
+			var turtleRadius = 1;
+			//Bottom
+			var botTurtles = [];
+			var topTurtles = [];
+			var botTurtlePlanes = [];
+			var topTurtlePlanes = [];
+
+			// Froggy
+			var frog;
+			//Score
+			var end, start;
+
+			// instantiate a loader
+			var loader = new THREE.OBJLoader();
+
+			// load a resource
+			loader.load(
+				// resource URL
+				'models/frog.obj',
+				// Function when resource is loaded
+				function ( object ) {
+					object.scale.set(0.015, 0.015, 0.015);
+					object.position.set(0, 0, -10);
+					object.rotation.x = Math.PI/2;
+					object.rotation.y = Math.PI;
+					object.traverse( function ( child )
+					{
+						 if ( child instanceof THREE.Mesh ){
+								 child.material.color.setRGB (0.24, 0.56, 0.25);
+								 child.castShadow = true;
+								 child.receiveShadow = true;
+						 }
+					});
+					frog = object;
+					scene.add( frog );
+				}
+			);
+
+			// Variables to determine whether frogger is dead/alive
+			var hit = false;
+			var onLog = false;
+			var onTurtle = false;
+			var onWater = false;
+			var onGrass = false;
+			var onFinish = false;
+			var gameOver = false;
+			var startGame = false;
+			var gameCompleted = false;
+			var run = 0;
+			var lives = 3;
+			var level = 1;
+			var levelsCompleted = 0;
+			var finishNum = 0;
+			var finishSet = new Set();
+			var justFinished = false;
+			var placeHolders = [];
+
+			var INCREMENT_SPEED = 0.012;
+			//Score related stuff
+			var TOTAL_LEVELS = 2;
+			var TOTAL_SPOTS = 5;
+			var score = 0;
+
+			// Initializes on new level or resets Frogs after dying
+			function initObjects()
+			{
+				hit = false;
+				onLog = false;
+				onTurtle = false;
+				onWater = false;
+				onGrass = false;
+				if(gameOver)
+				{
+					run = 0;
+					lives = 3;
+					level = 1;
+					levelsCompleted = 0;
+					score = 0;
+					document.getElementById("start").style.visibility = "hidden";
+					document.getElementById("gameOverText").style.visibility = "hidden";
+					for (var i = 0; i < placeHolders.length; i++) {
+						scene.remove(placeHolders[i]);
+					}
+					placeHolders = [];
+				} else {
+					document.getElementById("life").style.visibility = "visible";
+					document.getElementById("score").style.visibility = "visible";
+				}
+
+				if(gameCompleted)
+				{
+					run = 0;
+					lives = 3;
+					level = 1;
+					levelsCompleted = 0;
+					score = 0;
+					for (var i = 0; i < placeHolders.length; i++) {
+						scene.remove(placeHolders[i]);
+					}
+					placeHolders = [];
+					// // Reset Froggy
+					scene.remove(frog);
+					frog.position.x = 0;
+					frog.position.y = 0;
+					frog.position.z = -10;
+					frog.rotation.y = Math.PI;
+					scene.add(frog);
+					document.getElementById("level").style.visibility = "hidden";
+				} else{
+					document.getElementById("level").style.visibility = "visible";
+				}
+
+				onFinish = false;
+				gameOver = false;
+				document.getElementById("life").innerHTML = "LIVES: "+lives;
+				document.getElementById("levelNum").innerHTML = "LEVEL "+level;
+				document.getElementById("score").innerHTML = "SCORE: "+score;
+
+
+				console.log("current speed increment "+levelsCompleted*INCREMENT_SPEED);
+
+				if(run != 0){
+					// // Reset Froggy
+					scene.remove(frog);
+					frog.position.x = 0;
+					frog.position.y = 0;
+					frog.position.z = -10;
+					frog.rotation.y = Math.PI;
+					scene.add(frog);
+					if(lives > 0 && !justFinished){
+						extraLifeAudio.play();
+					} else{
+						justFinished = false;
+					}
+				} else {
+
+					// yellow cars slow
+					for(var y = 0; y < yellowCars.length; y++)
+					{
+						scene.remove(yellowCars[y]);
+					}
+					yellowCars = [];
+					for(var y = 0; y < 5; y++)
+					{
+						var carMat = new THREE.MeshPhongMaterial({ specular: 0x050505, map: yellowCarTexture});
+						var car = new THREE.Mesh(geometry, carMat);
+						car.position.x = groundRoadPlane.parameters.width/2 + 8*y;
+						car.position.y = 2;
+						car.position.z = -9.5;
+						car.castShadow = true;
+						car.receiveShadow = true;
+						yellowCars.push(car);
+						scene.add(car);
+					}
+
+					// green slow
+					for(var gs = 0; gs < greenSlowCars.length; gs++)
+					{
+						scene.remove(greenSlowCars[gs]);
+					}
+					greenSlowCars = [];
+					for(var gs = 0; gs < 5; gs++)
+					{
+						var carMat = new THREE.MeshPhongMaterial({ specular: 0x050505, map: greenSlowCarTexture});
+						var car = new THREE.Mesh(geometry, carMat);
+						car.position.x = -20 - 8*gs;
+						car.position.y = 4;
+						car.position.z = -9.5;
+						car.castShadow = true;
+						car.receiveShadow = true;
+						greenSlowCars.push(car);
+						scene.add(car);
+					}
+
+					// pink a bit faster
+					for(var p = 0; p < greenSlowCars.length; p++)
+					{
+						scene.remove(pinkCars[p]);
+					}
+					pinkCars = [];
+					for(var p = 0; p < 4; p++)
+					{
+						var carMat = new THREE.MeshPhongMaterial({ specular: 0x050505, map: pinkCarTexture});
+						var car = new THREE.Mesh(geometry, carMat);
+						car.position.x = groundRoadPlane.parameters.width/2 + 8*p;
+						car.position.y = 6;
+						car.position.z = -9.5;
+						car.castShadow = true;
+						car.receiveShadow = true;
+						pinkCars.push(car);
+						scene.add(car);
+					}
+
+					// green2 fastest
+					for(var gf = 0; gf < greenFastCars.length; gf++)
+					{
+						scene.remove(greenFastCars[gf]);
+					}
+					greenFastCars = [];
+					for(var gf = 0; gf < 1; gf++)
+					{
+						var carMat = new THREE.MeshPhongMaterial({ specular: 0x050505, map: greenFastCarTexture});
+						var car = new THREE.Mesh(geometry, carMat);
+						car.position.x = -groundRoadPlane.parameters.width/2 - 15*gf;
+						car.position.y = 8;
+						car.position.z = -9.5;
+						car.castShadow = true;
+						car.receiveShadow = true;
+						greenFastCars.push(car);
+						scene.add(car);
+					}
+
+					// grey cars slow
+					for(var gt = 0; gt < greyCars.length; gt++)
+					{
+						scene.remove(greyCars[gt]);
+					}
+					greyCars = [];
+					for(var gt = 0; gt < 2; gt++)
+					{
+						var carMat = new THREE.MeshPhongMaterial({ specular: 0x050505, map: greyCarTexture});
+						var carGeo = new THREE.BoxGeometry(3, 1, 1);
+						var car = new THREE.Mesh(carGeo, carMat);
+						car.position.x = groundRoadPlane.parameters.width/2 + 15*gt;
+						car.position.y = 10;
+						car.position.z = -9.5;
+						car.castShadow = true;
+						car.receiveShadow = true;
+						greyCars.push(car);
+						scene.add(car);
+					}
+
+					// short log
+					for(var sl = 0; sl < shortLogs.length; sl++)
+					{
+						scene.remove(shortLogs[sl]);
+					}
+					shortLogs = [];
+					for(var sl = 0; sl < 6; sl++)
+					{
+						var logGeo = new THREE.CylinderGeometry(0.5, 0.5, 4);
+						var logMat = new THREE.MeshLambertMaterial({ color: 0xfba52f, map: logTexture});
+						var log = new THREE.Mesh(logGeo, logMat);
+						log.position.set(-20 - 8*sl, 16, -10);
+						log.rotation.z = Math.PI/2;
+						log.castShadow = true;
+						log.receiveShadow = true;
+						shortLogs.push(log);
+						scene.add(log);
+					}
+
+					// fast long logs
+					for(var lf = 0; lf < longLogs.length; lf++)
+					{
+						scene.remove(longLogs[lf]);
+					}
+					longLogs = [];
+					for(var lf = 0; lf < 4; lf++)
+					{
+						var logGeo = new THREE.CylinderGeometry( 0.5, 0.5, 10);
+						var logMat = new THREE.MeshLambertMaterial( { color: 0xfba52f, map: logTexture } );
+						var log = new THREE.Mesh(logGeo, logMat);
+						log.position.set(-30 - 14*lf, 18, -10);
+						log.rotation.z = Math.PI/2;
+						log.castShadow = true;
+						log.receiveShadow = true;
+						longLogs.push(log);
+						scene.add(log);
+					}
+
+					// slower medium logs
+					for(var ml = 0; ml < mediumLogs.length; ml++)
+					{
+						scene.remove(mediumLogs[ml]);
+					}
+					mediumLogs = [];
+					for(var ml = 0; ml < 5; ml++)
+					{
+						var logGeo = new THREE.CylinderGeometry(0.5, 0.5, 6);
+						var logMat = new THREE.MeshLambertMaterial({ color: 0xfba52f, map: logTexture });
+						var log = new THREE.Mesh(logGeo, logMat);
+						log.position.set(-25 - 10*ml, 22, -10);
+						log.rotation.z = Math.PI/2;
+						log.castShadow = true;
+						log.receiveShadow = true;
+						mediumLogs.push(log);
+						scene.add(log);
+					}
+
+					for(var bt = 0; bt < botTurtles.length; bt++)
+					{
+						scene.remove(botTurtles[bt]);
+					}
+					for(var btp = 0; btp < botTurtlePlanes.length; btp++){
+						scene.remove(botTurtlePlanes[btp]);
+					}
+					botTurtles = [];
+					botTurtlePlanes = [];
+					for(var bt = 0; bt < 7; bt++)
+					{
+						var turtle = new THREE.Mesh(turtleGeo, turtleMat);
+						turtle.position.set(21 + 7*bt, 14, -10.8);
+						turtle.castShadow = true;
+						turtle.receiveShadow = true;
+						scene.add(turtle);
+
+						var turtle1 = new THREE.Mesh(turtleGeo, turtleMat);
+						turtle1.position.set(22.5 + 7*bt, 14, -10.8);
+						turtle1.castShadow = true;
+						turtle1.receiveShadow = true;
+						scene.add(turtle1);
+
+						var turtle2 = new THREE.Mesh(turtleGeo, turtleMat);
+						turtle2.position.set(24 + 7*bt, 14, -10.8);
+						turtle2.castShadow = true;
+						turtle2.receiveShadow = true;
+						scene.add(turtle2);
+
+						botTurtles.push(turtle, turtle1, turtle2);
+
+			      var groundWater = new THREE.Mesh(turtleWaterPlane, turtleWaterMat);
+						groundWater.position.x = 21 + 7*bt;
+						groundWater.position.y = 14;
+						groundWater.position.z = -10.5;
+			      // //IMPORTANT, draw on both sides
+			      groundWater.doubleSided = true;
+			      groundWater.receiveShadow = true;
+						botTurtlePlanes.push(groundWater);
+						scene.add(groundWater);
+
+						var groundWater1 = new THREE.Mesh(turtleWaterPlane, turtleWaterMat);
+						groundWater1.position.x = 22.5 + 7*bt;
+						groundWater1.position.y = 14;
+						groundWater1.position.z = -10.5;
+						// //IMPORTANT, draw on both sides
+						groundWater1.doubleSided = true;
+						groundWater1.receiveShadow = true;
+						botTurtlePlanes.push(groundWater1);
+						scene.add(groundWater1);
+
+						var groundWater2 = new THREE.Mesh(turtleWaterPlane, turtleWaterMat);
+						groundWater2.position.x = 24 + 7*bt;
+						groundWater2.position.y = 14;
+						groundWater2.position.z = -10.5;
+						// //IMPORTANT, draw on both sides
+						groundWater2.doubleSided = true;
+						groundWater2.receiveShadow = true;
+						botTurtlePlanes.push(groundWater2);
+						scene.add(groundWater2);
+					}
+
+					//Top
+					for(var tt = 0; tt < topTurtles.length; tt++)
+					{
+						scene.remove(topTurtles[tt]);
+					}
+					for(var tp = 0; tp < topTurtlePlanes.length; tp++){
+						scene.remove(topTurtlePlanes[tp]);
+					}
+					topTurtles = [];
+					topTurtlePlanes = [];
+					for(var tt = 0; tt < 7; tt++)
+					{
+						var turtle = new THREE.Mesh(turtleGeo, turtleMat);
+						turtle.position.set(25 + 6*tt, 20, -10.8);
+						turtle.castShadow = true;
+						turtle.receiveShadow = true;
+						scene.add(turtle);
+
+						var turtle1 = new THREE.Mesh(turtleGeo, turtleMat);
+						turtle1.position.set(26.5 + 6*tt, 20, -10.8);
+						turtle1.castShadow = true;
+						turtle1.receiveShadow = true;
+						scene.add(turtle1);
+
+						topTurtles.push(turtle, turtle1);
+
+						var groundWater = new THREE.Mesh(turtleWaterPlane, turtleWaterMat);
+						groundWater.position.x = 25 + 6*tt;
+						groundWater.position.y = 20;
+						groundWater.position.z = -10.5;
+			      // //IMPORTANT, draw on both sides
+			      groundWater.doubleSided = true;
+			      groundWater.receiveShadow = true;
+						topTurtlePlanes.push(groundWater);
+						scene.add(groundWater);
+
+						var groundWater1 = new THREE.Mesh(turtleWaterPlane, turtleWaterMat);
+						groundWater1.position.x = 26.5 + 6*tt;
+						groundWater1.position.y = 20;
+						groundWater1.position.z = -10.5;
+						// //IMPORTANT, draw on both sides
+						groundWater1.doubleSided = true;
+						groundWater1.receiveShadow = true;
+						topTurtlePlanes.push(groundWater1);
+						scene.add(groundWater1);
+					}
+				} // end if
+
+			}
+
+			/**
+			*	Key handling
+			*/
+			window.onkeydown = function(e) {
+				return !(e.keyCode == 32 || e.keyCode == 38 || e.keyCode == 37 || e.keyCode == 39 || e.keyCode == 40 && e.target == document.body);
+			};
+
+			var currentlyPressedKeys = {};
+			var down = false;
+			document.addEventListener('keydown', function () {
+			    if(down) return;
+			    down = true;
+					currentlyPressedKeys[event.keyCode] = true;
+					if((!hit && !onWater && !onGrass) || (onLog || onTurtle) || gameCompleted){
+						handleKeys();
+					}
+			    // your magic code here
+			}, false);
+
+			document.addEventListener('keyup', function () {
+			    down = false;
+					currentlyPressedKeys[event.keyCode] = false;
+					if((!hit && !onWater && !onGrass) || (onLog || onTurtle)){
+						frog.position.z = -10;
+						if(onLog){
+							frog.position.z = -9.5;
+						}
+					}
+			}, false);
+
+			// Frogger movement
+			function handleKeys() {
+				movementAudio.pause();
+				movementAudio.currentTime = 0;
+				if(event.keyCode == 32){ // Press Space to begin game!
+					startAudio.play();
+					setTimeout(function () {
+						startMusic.play();
+					}, 5000);
+					console.log("placeholder size pre: "+placeHolders.length);
+					initObjects();
+					console.log("placeholder size post: "+placeHolders.length);
+					document.getElementById("start").style.visibility = "hidden";
+					document.getElementById("gameOverText").style.visibility = "hidden";
+					document.getElementById("levelCompleteText").style.visibility = "hidden";
+					startGame = true;
+					gameCompleted = false;
+					gameOver = false;
+					start = new Date();
+				} else if(startGame && !gameOver && !gameCompleted){
+				  if (event.keyCode == 39 && frog.position.x + 2 < border) { // Press Right
+						frog.rotation.y = Math.PI/2;
+						frog.position.x += 2;
+						frog.position.z = -9;
+						movementAudio.play();
+				  }
+				  if (event.keyCode == 37 && frog.position.x - 2 > -border) {  // Press Left
+						frog.rotation.y = -Math.PI/2;
+						frog.position.x -= 2;
+						frog.position.z = -9;
+						movementAudio.play();
+				  }
+				  if (event.keyCode == 38 && frog.position.y + 2 < topBorder) { // Up
+						frog.rotation.y = Math.PI;
+						frog.position.y += 2;
+						frog.position.z = -9;
+						movementAudio.play();
+				  }
+				  if (event.keyCode == 40 && frog.position.y - 2 >= 0) { // Down
+						frog.rotation.y = 2*Math.PI;
+						frog.position.y -= 2;
+						frog.position.z = -9;
+						movementAudio.play();
+				  }
+				}
+
+			}
+
+			// returns true if frogger has hit vehicle, false otherwise
+			function hitsVehicle(vehicle, isTruck)
+			{
+				// dec is for when you have a truck since its x position is in middle
+				// so need to dec one if check x bounds
+				var dec = 0;
+				var length = normalCarLength;
+				if(isTruck){
+					length = greyCarLength
+					dec = 1;
+				}
+				if(frog.position.x + normalCarLength >= vehicle.position.x - dec // right edge
+					&& frog.position.x <= vehicle.position.x + length - dec // left edge
+					&& frog.position.y + normalCarLength >= vehicle.position.y // top edge
+					&& frog.position.y <= vehicle.position.y + length - dec*2 // bottom edge
+				)
+				{
+					return true;
+				}
+				return false;
+			}
+
+			// returns true if frogger has landed on a log, false otherwise
+			function landedOnLog(log, length)
+			{
+				if(frog.position.x >= log.position.x - length/2// right edge
+					&& frog.position.x <= log.position.x + length/2 // left edge
+					&& frog.position.y >= log.position.y // top edge
+					&& frog.position.y <= log.position.y + logWidth/2	// bottom edge
+				)
+				{
+					return true;
+				}
+				return false;
+			}
+
+			// returns true if frogger has landed on water, false otherwise
+			function landedOnWater()
+			{
+				if(frog.position.x >= groundWater.position.x - groundWaterPlane.parameters.width/2// right edge
+					&& frog.position.x <= groundWater.position.x + groundWaterPlane.parameters.width/2// left edge
+					&& frog.position.y >= groundWater.position.y - groundWaterPlane.parameters.height/2 + 1// top edge
+					&& frog.position.y <= groundWater.position.y + groundWaterPlane.parameters.height/2	// bottom edge
+				)
+				{
+					return true;
+				}
+				return false;
+			}
+
+			// returns true if frogger has landed on grass at end, false otherwise
+			function landedOnGrass()
+			{
+				if(frog.position.x >= groundGrass.position.x - groundGrassPlane.parameters.width/2// right edge
+					&& frog.position.x <= groundGrass.position.x + groundGrassPlane.parameters.width/2// left edge
+					&& frog.position.y >= groundGrass.position.y - groundGrassPlane.parameters.height/2// top edge
+					&& frog.position.y <= groundGrass.position.y + groundGrassPlane.parameters.height/2	// bottom edge
+				)
+				{
+					return true;
+				}
+				return false;
+			}
+
+			// returns true if frogger has landed on finish spot at end, false otherwise
+			function landedOnFinish()
+			{
+				for(var f = 0; f < finishSpots.length; f++)
+				{
+					if(frog.position.x >= finishSpots[f].position.x - finishPlane.parameters.width/2// right edge
+						&& frog.position.x <= finishSpots[f].position.x + finishPlane.parameters.width/2// left edge
+						&& frog.position.y >= finishSpots[f].position.y - finishPlane.parameters.height/2// top edge
+						&& frog.position.y <= finishSpots[f].position.y + finishPlane.parameters.height/2	// bottom edge
+					)
+					{
+						if(!finishSet.has(f)){
+							if(finishSet.size < TOTAL_SPOTS){ // exclude noise for last one
+								finishSpotAudio.play();
+							}
+							finishSet.add(f);
+							justFinished = true;
+							end = new Date();
+							// lower the time the better
+							score += Math.round(180/((end.getTime() - start.getTime())/1000)*100);
+							// Add a placeholder frog for visual feedback that froggy was there
+							// load a resource
+							loader.load(
+								// resource URL
+								'models/frog.obj',
+								// Function when resource is loaded
+								function ( object ) {
+									object.scale.set(0.025, 0.025, 0.025);
+									object.position.set(finishSpots[f].position.x, finishSpots[f].position.y, -10);
+									object.rotation.x = Math.PI/2;
+									object.rotation.y = Math.PI;
+									object.traverse( function ( child )
+									{
+										 if ( child instanceof THREE.Mesh ){
+												 child.material.color.setRGB (0.12, 0.28, 0.125);
+												 child.castShadow = true;
+												 child.receiveShadow = true;
+										 }
+									});
+									placeHolders.push(object);
+									scene.add( object );
+								}
+							);
+						}
+						if(finishSet.size == TOTAL_SPOTS){ // 5 spots
+							// Game Victory: show text of Game Completed and play Game over after that
+							if(level == TOTAL_LEVELS){
+								document.getElementById("levelCompleteText").innerHTML = "GAME COMPLETED!"
+								document.getElementById("levelCompleteText").style.visibility = "visible";
+								document.getElementById("levelComplete").style.visibility = "visible";
+								setTimeout(function () {
+									document.getElementById("level").style.visibility = "hidden";
+									document.getElementById("start").style.visibility = "visible";
+									// document.getElementById("levelComplete").style.visibility = "hidden";
+									gameOverAudio.pause();
+									gameOverAudio.currentTime = 0;
+									gameOverAudio.play();
+									// Regardless of whether we're done with level or game, clear out
+									// placeholders bc we reached 5 and increase level/levelcompleted
+									for (var i = 0; i < placeHolders.length; i++) {
+										scene.remove(placeHolders[i]);
+									}
+									placeHolders = [];
+									level++;
+									levelsCompleted++;
+									finishSet.clear();
+								}, 2000);
+								gameCompleted = true;
+								console.log("game complete");
+							}
+							// Otherwise, just show that user has completed level.
+							else {
+								console.log("Level "+level+" complete!");
+								setTimeout(function () {
+									document.getElementById("levelCompleteText").style.visibility = "visible";
+									document.getElementById("levelCompleteText").innerHTML = "LEVEL "+level+" COMPLETED!"
+									document.getElementById("levelComplete").style.visibility = "visible";
+									startMusic.play();
+								}, 1000);
+								setTimeout(function () {
+									level++;
+									document.getElementById("levelCompleteText").style.visibility = "hidden";
+									document.getElementById("levelComplete").style.visibility = "hidden";
+									document.getElementById("levelNum").innerHTML = "LEVEL "+level;
+									document.getElementById("level").style.visibility = "visible";
+									// Regardless of whether we're done with level or game, clear out
+									// placeholders bc we reached 5 and increase level/levelcompleted
+									for (var i = 0; i < placeHolders.length; i++) {
+										scene.remove(placeHolders[i]);
+									}
+									placeHolders = [];
+									levelsCompleted++;
+									finishSet.clear();
+								}, 2000);
+							}
+						}
+						start = new Date();
+						return true;
+					}
+				}
+				return false;
+			}
+
+			// returns true if frogger has landed on finish spot at end, false otherwise
+			function landedOnTurtle()
+			{
+				for(var t = 0; t < botTurtlePlanes.length; t++)
+				{
+					if(frog.position.x >= botTurtlePlanes[t].position.x - turtleWaterPlane.parameters.width/2// right edge
+						&& frog.position.x <= botTurtlePlanes[t].position.x + turtleWaterPlane.parameters.width/2// left edge
+						&& frog.position.y >= botTurtlePlanes[t].position.y - turtleWaterPlane.parameters.height/2// top edge
+						&& frog.position.y <= botTurtlePlanes[t].position.y + turtleWaterPlane.parameters.height/2	// bottom edge
+					)
+					{
+						return true;
+					}
+				}
+				for(var t = 0; t < topTurtlePlanes.length; t++)
+				{
+					if(frog.position.x >= topTurtlePlanes[t].position.x - turtleWaterPlane.parameters.width/2// right edge
+						&& frog.position.x <= topTurtlePlanes[t].position.x + turtleWaterPlane.parameters.width/2// left edge
+						&& frog.position.y >= topTurtlePlanes[t].position.y - turtleWaterPlane.parameters.height/2// top edge
+						&& frog.position.y <= topTurtlePlanes[t].position.y + turtleWaterPlane.parameters.height/2	// bottom edge
+					)
+					{
+						return true;
+					}
+				}
+
+				return false;
+			}
+
+			// RENDERING THE SCENE
+      function render() {
+      	requestAnimationFrame(render);
+				if(startGame){
+					if((hit || onWater || onGrass) && !onLog && !onTurtle && !onFinish){
+						startMusic.pause();
+						startMusic.currentTime = 0;
+						if(frog.position.z > -11){
+							animateFrogDeath();
+						} else {
+							run++;
+							lives--;
+							if(lives == 0){
+								// if no lives left, show Game Over and Start text and hide Level
+								setTimeout(function () {
+									document.getElementById("level").style.visibility = "hidden";
+									document.getElementById("start").style.visibility = "visible";
+									document.getElementById("gameOverText").style.visibility = "visible";
+									gameOverAudio.play();
+								}, 1000);
+							} else {
+								justFinished = false;
+							}
+							initObjects();
+						}
+					} else if(onFinish){
+						if(frog.position.z > -11){
+							animateFinishSlot();
+						} else {
+							run++;
+							initObjects();
+						}
+					} else if(frog.position.x > border || frog.position.x < -border){
+						//went to border by riding log / turtles
+						if(frog.position.z > -11){
+							animateFrogDeath();
+						} else {
+							run++;
+							lives--;
+							if(lives == 0){
+								setTimeout(function () {
+									document.getElementById("level").style.visibility = "hidden";
+									document.getElementById("start").style.visibility = "visible";
+									document.getElementById("gameOverText").style.visibility = "visible";
+									gameOverAudio.play();
+								}, 1000);
+							} else{
+								justFinished = false;
+							}
+							initObjects();
+						}
+					} else if(lives == 0){
+						gameOver = true;
+						// console.log("game over");
+					} else {
+						updateCars();
+						updateLogs();
+						updateTurtles();
+						if(frog.position.x > border || frog.position.x < -border){
+							squashAudio.pause();
+							squashAudio.currentTime = 0;
+							squashAudio.play();
+						}
+						if(landedOnGrass()){
+							onGrass = true;
+						}
+						if (landedOnFinish()) {
+							onFinish = true;
+						}
+						if (landedOnTurtle()) {
+							onTurtle = true;
+						} else {
+							onTurtle = false;
+						}
+						if(landedOnWater() && !onGrass && !onTurtle && !onLog){
+							onWater = true;
+							plunkAudio.pause();
+							plunkAudio.currentTime = 0;
+							plunkAudio.play();
+						} else {
+							onWater = false;
+						}
+
+					}
+				}
+				renderer.render(scene, camera);
+      }
+      render();
+
+			function animateFrogDeath()
+			{
+				frog.position.z -= 0.1;
+			}
+
+			function animateFinishSlot()
+			{
+				frog.position.z -= 0.05;
+			}
+
+			// UPDATE OBJECTS FUNCTIONS
+			function updateCars(){
+				hit = false;
+				// Cars
+				//yellow cars
+				for(var y = 0; y < yellowCars.length; y++)
+				{
+					yellowCars[y].position.x -= 0.02 + INCREMENT_SPEED*levelsCompleted;
+					if(yellowCars[y].position.x < -(border + normalCarLength)){
+						yellowCars[y].position.x = border + normalCarLength;
+					}
+					if(hitsVehicle(yellowCars[y], false)){
+						hit = true;
+					}
+				}
+				//green cars
+				for(var gs = 0; gs < greenSlowCars.length; gs++)
+				{
+					greenSlowCars[gs].position.x += 0.02 + INCREMENT_SPEED*levelsCompleted;
+					if(greenSlowCars[gs].position.x > border + normalCarLength){
+						greenSlowCars[gs].position.x = -(border + normalCarLength);
+					}
+					if(hitsVehicle(greenSlowCars[gs], false)){
+						hit = true;
+					}
+				}
+				//pink cars
+				for(var p = 0; p < pinkCars.length; p++)
+				{
+					pinkCars[p].position.x -= 0.03 + INCREMENT_SPEED*levelsCompleted;
+					if(pinkCars[p].position.x < -(border + normalCarLength)){
+						pinkCars[p].position.x = border + normalCarLength;
+					}
+					if(hitsVehicle(pinkCars[p], false)){
+						hit = true;
+					}
+				}
+				//green cars
+				for(var gf = 0; gf < greenFastCars.length; gf++)
+				{
+					greenFastCars[gf].position.x += 0.05 + INCREMENT_SPEED*levelsCompleted;
+					if(greenFastCars[gf].position.x > border + normalCarLength){
+						greenFastCars[gf].position.x = -(border + normalCarLength);
+					}
+					if(hitsVehicle(greenFastCars[gf], false)){
+						hit = true;
+					}
+				}
+				//grey cars
+				for(var gt = 0; gt < greyCars.length; gt++)
+				{
+					greyCars[gt].position.x -= 0.05 + INCREMENT_SPEED*levelsCompleted;
+					if(greyCars[gt].position.x < -(border + greyCarLength)){
+						greyCars[gt].position.x = border + greyCarLength;
+					}
+					if(hitsVehicle(greyCars[gt], true)){
+						hit = true;
+					}
+				}
+				if(hit){
+					squashAudio.pause();
+					squashAudio.currentTime = 0;
+					squashAudio.play();
+				}
+			}
+
+			function updateLogs()
+			{
+				onLog = false;
+				var onSmallLog = false;
+				var onBigLog = false;
+				var onMediumLog = false;
+				// Logs
+				// first small log
+				for(var sl = 0; sl < shortLogs.length; sl++)
+				{
+					shortLogs[sl].position.x += 0.05 + INCREMENT_SPEED*levelsCompleted;
+					if(shortLogs[sl].position.x > border + shortLogLength){
+						shortLogs[sl].position.x = -(border + shortLogLength);
+					}
+					if(landedOnLog(shortLogs[sl], shortLogLength)){
+						onLog = true;
+						onSmallLog = true;
+					}
+				}
+				// second big log
+				// console.log("height "+logGeo3.parameters.height);
+				for(var lf = 0; lf < longLogs.length; lf++)
+				{
+					longLogs[lf].position.x += 0.12 + INCREMENT_SPEED*levelsCompleted;
+					if(longLogs[lf].position.x > border + longLogLength){
+						longLogs[lf].position.x = -(border + longLogLength);
+					}
+					if(landedOnLog(longLogs[lf], longLogLength)){
+						onLog = true;
+						onBigLog = true;
+					}
+				}
+				// third big log
+				for(var ml = 0; ml < mediumLogs.length; ml++)
+				{
+					mediumLogs[ml].position.x += 0.1 + INCREMENT_SPEED*levelsCompleted;
+					if(mediumLogs[ml].position.x > border + mediumLogLength){
+						mediumLogs[ml].position.x = -(border + mediumLogLength);
+					}
+					if(landedOnLog(mediumLogs[ml], mediumLogLength)){
+						onLog = true;
+						onMediumLog = true;
+					}
+				}
+				if(onSmallLog){
+					frog.position.x += 0.05 + INCREMENT_SPEED*levelsCompleted;
+				} else if(onMediumLog){
+					frog.position.x += 0.1 + INCREMENT_SPEED*levelsCompleted;
+				} else if(onBigLog){
+					frog.position.x += 0.12 + INCREMENT_SPEED*levelsCompleted;
+				}
+			}
+
+			function updateTurtles()
+			{
+				//Bottom
+				//Turtles
+				var turtleOffset = 0;
+				for(var bt = 0; bt < botTurtles.length; bt++)
+				{
+
+					botTurtles[bt].position.x -= 0.05 + INCREMENT_SPEED*levelsCompleted;
+					if(botTurtles[bt].position.x < -(border + turtleRadius)){
+						botTurtles[bt].position.x = border + turtleRadius;
+					}
+					botTurtlePlanes[turtleOffset].position.x -= 0.05 + INCREMENT_SPEED*levelsCompleted;
+					if(botTurtlePlanes[turtleOffset].position.x < -(border + turtleRadius)){
+						botTurtlePlanes[turtleOffset].position.x = border + turtleRadius;
+					}
+					turtleOffset++;
+				}
+
+				//Top
+				turtleOffset = 0;
+				for(var tt = 0; tt < topTurtles.length; tt++)
+				{
+					topTurtles[tt].position.x -= 0.05 + INCREMENT_SPEED*levelsCompleted;
+					if(topTurtles[tt].position.x < -(border + turtleRadius)){
+						topTurtles[tt].position.x = border + turtleRadius;
+					}
+					topTurtlePlanes[turtleOffset].position.x -= 0.05 + INCREMENT_SPEED*levelsCompleted;
+					if(topTurtlePlanes[turtleOffset].position.x < -(border + turtleRadius)){
+						topTurtlePlanes[turtleOffset].position.x = border + turtleRadius;
+					}
+					turtleOffset++;
+				}
+
+				if(onTurtle){
+					frog.position.x -= 0.05 + INCREMENT_SPEED*levelsCompleted;
+				}
+			}
+		</script>
+	</body>
+</html>
